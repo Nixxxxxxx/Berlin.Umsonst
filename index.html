@@ -142,7 +142,7 @@
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("target").innerHTML =
                         this.responseText;
-                    $('#myCarousel').carousel({
+                    document.getElementById('#myCarousel').carousel({
                         interval: 1000
                     })
                 }

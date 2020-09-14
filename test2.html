@@ -1,0 +1,145 @@
+﻿<html>
+<head>
+    <title>Lingua_Franca</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css'>
+
+    <link type="text/css" rel="stylesheet" href="./build/jodit.min.css">
+    <script type="text/javascript" src="./build/jodit.min.js"></script>
+
+    <style>
+        body {
+            height: 100%;
+            margin-top: 2em;
+            margin-bottom: 2em;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <tr><td>Text to Save:</td></tr>
+        <tr>
+            <td colspan="3">
+                <textarea id="inputTextToSave" cols="80" rows="25"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>Filename to Save As:</td>
+            <td><input id="inputFileNameToSaveAs"></input></td>
+            <td><button onclick="saveTextAsFile()">Save Text to File</button></td>
+        </tr>
+        <tr>
+            <td>Select a File to Load:</td>
+            <td><input type="file" id="fileToLoad"></td>
+            <td><button onclick="loadFileAsText()">Load Selected File</button>
+            <td>
+        </tr>
+    </table>
+
+
+    <script type="text/javascript">
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+
+        function showFolderFileList(folderspec) {
+            var s = "";
+            var f = fso.GetFolder(folderspec);
+
+            // recurse subfolders
+            var subfolders = new Enumerator(f.SubFolders);
+            for (; !subfolders.atEnd(); subfolders.moveNext()) {
+                s += ShowFolderFileList((subfolders.item()).path);
+            }
+
+            // display all file path names.
+            var fc = new Enumerator(f.files);
+            for (; !fc.atEnd(); fc.moveNext()) {
+                s += fc.item() + "<br>";
+            }
+            return s;
+        }
+
+        function listFiles() {
+            document.getElementById('files').innerHTML = showFolderFileList('C:');
+        }
+    </script>
+
+    <input type='button' onclick='listFiles()' value='List Files' />
+    <div id="files"> xxx</div>
+
+
+    <script type="text/javascript">
+
+        function saveTextAsFile() {
+            var textToSave = document.getElementById("inputTextToSave").value;
+            var textToSaveAsBlob = new Blob([textToSave], { type: "text/plain" });
+            var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+            var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+
+            var downloadLink = document.createElement("a");
+            downloadLink.download = fileNameToSaveAs;
+            downloadLink.innerHTML = "Download File";
+            downloadLink.href = textToSaveAsURL;
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+
+            downloadLink.click();
+        }
+
+        function destroyClickedElement(event) {
+            document.body.removeChild(event.target);
+        }
+
+        function loadFileAsText() {
+            var fileToLoad = document.getElementById("fileToLoad").files[0];
+
+            var fileReader = new FileReader();
+            fileReader.onload = function (fileLoadedEvent) {
+                var textFromFileLoaded = fileLoadedEvent.target.result;
+                document.getElementById("inputTextToSave").value = textFromFileLoaded;
+            };
+            fileReader.readAsText(fileToLoad, "UTF-8");
+        }
+
+    </script>
+
+
+    <script>
+        var editor = new Jodit('#inputTextToSave');
+
+    </script>
+
+
+    <a href="#" id="nav1"> Load 123456</a>
+    <div id="target">XXXZZZXXX</div>
+    <button type="button" onclick="loadDoc()">Change Content</button>
+
+    <!--<script>
+        $(document).ready(function () {
+            $("#nav1").click(function () {
+                $("#target").load('index.html');
+            });
+        });
+    </script>-->
+
+    <script>
+        function loadDoc() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("target").innerHTML =
+                        this.responseText;
+                }
+            };
+            xhttp.open("GET", "./test.html", true);
+            xhttp.send();
+        }
+    </script>
+</body>
+</html>

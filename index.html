@@ -142,9 +142,9 @@
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("target").innerHTML =
                         this.responseText;
-                    document.getElementById('#myCarousel').carousel({
-                        interval: 1000
-                    })
+                    setTimeout(function () { // just being safe
+                        $('.carousel').carousel();
+                    }, 20);
                 }
             };
             xhttp.open("GET", "./comedy_carousel.html", true);
